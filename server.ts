@@ -19,7 +19,11 @@ import {
 import { eq, desc, and } from 'drizzle-orm';
 import { requireAuth, AuthRequest } from './src/middleware/auth.ts';
 import { getOrCreateUser } from './src/db/users.ts';
-import { generateProjectGuidePDF, generatePresentationScriptPDF } from './src/lib/pdfGenerator.ts';
+import {
+  generateProjectGuidePDF,
+  generatePresentationScriptPDF,
+  generateIEEEPaperPDF,
+} from './src/lib/pdfGenerator.ts';
 
 const execFileAsync = promisify(execFile);
 const app = express();
@@ -926,6 +930,20 @@ app.get('/api/download-presentation-script-pdf', async (_req, res) => {
   } catch (error: any) {
     console.error('Presentation script PDF generation error:', error);
     res.status(500).json({ error: 'Failed to generate Presentation Script PDF' });
+  }
+});
+
+// ---------------- EXPORT IEEE FORMAT PAPER AS PDF ----------------
+app.get('/api/download-ieee-paper-pdf', async (_req, res) => {
+  try {
+    const pdfBuffer = await generateIEEEPaperPDF();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="OmniLife_Studio_IEEE_Paper.pdf"');
+    res.setHeader('Content-Length', pdfBuffer.length);
+    res.send(pdfBuffer);
+  } catch (error: any) {
+    console.error('IEEE Paper PDF generation error:', error);
+    res.status(500).json({ error: 'Failed to generate IEEE Paper PDF' });
   }
 });
 
