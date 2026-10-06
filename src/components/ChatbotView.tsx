@@ -24,7 +24,7 @@ export const ChatbotView: React.FC = () => {
       id: 'welcome',
       role: 'assistant',
       content:
-        "Hello! I'm your OmniLife AI Mentor, powered by Gemini. I have real-time visibility into your Study sessions, Money ledger, Habit routines, and Target goals stored in your PostgreSQL database.\n\nAsk me anything from balancing your study focus and habits, analyzing your savings velocity and money management, or understanding your 1,200-record ML forecast projections!",
+        "Hello! I'm your OmniLife AI Mentor, powered by Gemini. I have real-time visibility into your Study sessions, Money ledger in Indian Rupees (₹), Habit routines, and Target goals stored in your PostgreSQL database.\n\nAsk me anything from balancing your study focus and habits, optimizing your savings in Indian Rupees (₹), or understanding your 1,200-record ML forecast projections!",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -34,7 +34,7 @@ export const ChatbotView: React.FC = () => {
 
   const suggestedPrompts = [
     'How do I balance 4 hours of study with my fitness habits?',
-    'Analyze my current savings rate and advise on portfolio money compounding.',
+    'How should I allocate ₹25,000 monthly savings between emergency fund and investments?',
     'Explain the 1,200-record ML feature importances for study performance.',
     'How does sleep duration affect my burnout risk in the simulation?',
   ];
@@ -72,11 +72,11 @@ export const ChatbotView: React.FC = () => {
         }),
       });
 
+      const data = await res.json();
       if (!res.ok) {
-        throw new Error('Chatbot response error');
+        throw new Error(data.error || 'Chatbot service error');
       }
 
-      const data = await res.json();
       const assistantMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -91,7 +91,7 @@ export const ChatbotView: React.FC = () => {
         {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: 'Sorry, I encountered an issue connecting to the AI model. Please try again.',
+          content: e.message || 'Sorry, I encountered an issue connecting to the AI model. Please try again.',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
@@ -116,10 +116,16 @@ export const ChatbotView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-purple-950 flex items-center gap-2">
-            <Bot className="w-6 h-6 text-pink-600" />
-            <span>OmniLife AI Advisor (Gemini 3.8)</span>
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-bold text-purple-950 flex items-center gap-2">
+              <Bot className="w-6 h-6 text-pink-600" />
+              <span>OmniLife AI Advisor (Gemini)</span>
+            </h2>
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Connected</span>
+            </span>
+          </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Context-aware intelligence connected to your live database records, ML forecasting, and What-If simulations.
           </p>

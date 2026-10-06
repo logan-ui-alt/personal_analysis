@@ -12,7 +12,8 @@ import {
   LogIn,
   LogOut,
   Database,
-  Sparkles
+  Sparkles,
+  User as UserIcon
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.tsx';
 
@@ -24,7 +25,8 @@ export type ActiveTab =
   | 'goals'
   | 'forecasting'
   | 'simulation'
-  | 'chatbot';
+  | 'chatbot'
+  | 'auth';
 
 interface NavbarProps {
   activeTab: ActiveTab;
@@ -32,8 +34,12 @@ interface NavbarProps {
   onOpenQuickLog: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenQuickLog }) => {
-  const { user, loginWithGoogle, logout } = useAuth();
+export const Navbar: React.FC<NavbarProps> = ({
+  activeTab,
+  setActiveTab,
+  onOpenQuickLog,
+}) => {
+  const { user, isGuest, logout } = useAuth();
 
   const navItems: { id: ActiveTab; label: string; icon: React.ReactNode; badge?: string }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
@@ -81,37 +87,47 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenQ
               <span>Quick Log</span>
             </button>
 
-            {user ? (
+            {user && !isGuest ? (
               <div className="flex items-center gap-2 bg-purple-50/80 border border-purple-200/80 rounded-lg p-1 pr-2">
-                {user.photoURL ? (
-                  <img
-                    src={user.photoURL}
-                    alt={user.displayName || 'User'}
-                    className="w-7 h-7 rounded-full border border-purple-300"
-                  />
-                ) : (
-                  <div className="w-7 h-7 rounded-full bg-purple-600 flex items-center justify-center text-xs font-bold text-white">
-                    {user.email ? user.email[0].toUpperCase() : 'U'}
-                  </div>
-                )}
-                <span className="text-xs font-semibold text-purple-900 hidden md:inline truncate max-w-[100px]">
-                  {user.displayName || user.email?.split('@')[0]}
-                </span>
+                <button
+                  onClick={() => setActiveTab('auth')}
+                  className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                  title="View Account Profile"
+                >
+                  {user.photoURL ? (
+                    <img
+                      src={user.photoURL}
+                      alt={user.displayName || 'User'}
+                      className="w-7 h-7 rounded-full border border-purple-300"
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-full bg-purple-600 flex items-center justify-center text-xs font-bold text-white">
+                      {user.email ? user.email[0].toUpperCase() : 'U'}
+                    </div>
+                  )}
+                  <span className="text-xs font-semibold text-purple-900 hidden md:inline truncate max-w-[100px]">
+                    {user.displayName || user.email?.split('@')[0]}
+                  </span>
+                </button>
                 <button
                   onClick={logout}
                   title="Sign out"
-                  className="p-1 text-slate-400 hover:text-rose-500 transition-colors"
+                  className="p-1 text-slate-400 hover:text-rose-500 transition-colors ml-1"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                 </button>
               </div>
             ) : (
               <button
-                onClick={loginWithGoogle}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-white hover:bg-purple-50 text-purple-800 border border-purple-200 transition-colors shadow-xs"
+                onClick={() => setActiveTab('auth')}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3 sm:py-2 text-xs font-bold rounded-lg transition-all shadow-xs ${
+                  activeTab === 'auth'
+                    ? 'bg-purple-950 text-white shadow-md'
+                    : 'bg-white hover:bg-purple-50 text-purple-900 border border-purple-200'
+                }`}
               >
-                <LogIn className="w-3.5 h-3.5 text-pink-500" />
-                <span>Sign in with Google</span>
+                <LogIn className="w-3.5 h-3.5 text-pink-600" />
+                <span>Login / Register</span>
               </button>
             )}
           </div>
@@ -125,31 +141,41 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenQ
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`relative flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 relative ${
                   isActive
-                    ? 'bg-gradient-to-r from-purple-100 to-pink-50 text-purple-900 shadow-xs ring-1 ring-purple-200'
-                    : 'text-slate-600 hover:text-purple-800 hover:bg-purple-50/60'
+                    ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-sm shadow-purple-500/20'
+                    : 'text-purple-900/80 hover:text-purple-950 hover:bg-purple-50/80'
                 }`}
               >
-                <span className={isActive ? 'text-pink-600' : 'text-slate-400'}>{item.icon}</span>
+                {item.icon}
                 <span>{item.label}</span>
                 {item.badge && (
                   <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold uppercase tracking-wider ${
                       isActive
-                        ? 'bg-pink-100 text-pink-700'
-                        : 'bg-slate-100 text-slate-500'
+                        ? 'bg-white/20 text-white'
+                        : 'bg-pink-100 text-pink-700'
                     }`}
                   >
                     {item.badge}
                   </span>
                 )}
-                {isActive && (
-                  <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full" />
-                )}
               </button>
             );
           })}
+
+          {/* Account Tab link */}
+          <button
+            onClick={() => setActiveTab('auth')}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 ml-auto ${
+              activeTab === 'auth'
+                ? 'bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white shadow-sm'
+                : 'text-purple-900/80 hover:text-purple-950 hover:bg-purple-50/80'
+            }`}
+          >
+            <UserIcon className="w-3.5 h-3.5" />
+            <span>{user && !isGuest ? 'Account' : 'Login / Register'}</span>
+          </button>
         </nav>
       </div>
     </header>
