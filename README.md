@@ -123,31 +123,58 @@ Beyond passive logging, OmniLife features a **1,200-record multivariate Machine 
 
 ---
 
-## 🚀 Getting Started
+## 🚀 How to Run in VS Code (Windows / Mac / Linux)
 
 ### 1. Prerequisites
-* Node.js 20+
-* Python 3.10+
-* PostgreSQL instance or Cloud SQL credentials
+* **Node.js**: Version 20 or higher installed on your computer ([Download Node.js](https://nodejs.org/)).
+* **Python**: Version 3.10+ (optional, for custom ML script execution).
 
-### 2. Installation
+---
+
+### 2. Step-by-Step Instructions
+
+#### Step 1: Open Terminal in VS Code
+Open VS Code, press ``Ctrl + ` `` (or go to **Terminal** > **New Terminal**).
+
+#### Step 2: Install All Dependencies (Crucial First Step)
+Before running the project, you must install the packages (`node_modules`):
 ```bash
-# Install dependencies
 npm install
 ```
+> 💡 **Why this is required:** When downloading the project zip, `node_modules` is not included. Running `npm install` installs `tsx`, `express`, `react`, `drizzle-kit`, and all build tools.
 
-### 3. Database Migration
-Ensure the database schema is pushed to PostgreSQL:
+#### Step 3: Run the Development Server
 ```bash
-npx drizzle-kit push
-```
-
-### 4. Running the Development Server
-```bash
-# Starts Node.js backend with mounted Vite middleware on port 3000
 npm run dev
 ```
-Open your browser and navigate to `http://localhost:3000`.
+
+#### Step 4: Open in Your Browser
+Once the server starts, open your browser and go to:
+```
+http://localhost:3000
+```
+
+---
+
+### ⚠️ Common Troubleshooting on Windows
+
+#### Issue A: `'tsx' is not recognized as an internal or external command`
+* **Cause**: You ran `npm run dev` before running `npm install`.
+* **Fix**: Simply run `npm install` in your terminal, wait for it to complete, and then run `npm run dev`.
+
+#### Issue B: `drizzle.config.json file does not exist`
+* **Fix**: A root `drizzle.config.ts` has been provided. If pushing database schema, simply run:
+  ```bash
+  npx drizzle-kit push
+  ```
+
+#### Issue C: PowerShell Execution Policy Restriction
+* If PowerShell gives a script error like `running scripts is disabled on this system`:
+  Run this in PowerShell:
+  ```powershell
+  Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+  ```
+  Or run using Command Prompt (`cmd`) inside VS Code.
 
 ---
 
